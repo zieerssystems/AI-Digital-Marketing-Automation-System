@@ -1,9 +1,17 @@
 <?php
 require_once 'db.php';
+require_once __DIR__ . '/../vendor/autoload.php'; // Load Composer
+
+use Dotenv\Dotenv;
+
+// Load environment variables
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 
 function generate_text($prompt) {
     error_log($prompt);
-    $api_key = "AIzaSyCa8utjjQulKCilSyglv8kosgrlnVbdEFw";
+    $api_key = $_ENV["GEMINI_API_KEY"];
     $model_name = "gemini-2.0-flash";
     $url = "https://generativelanguage.googleapis.com/v1beta/models/$model_name:generateContent?key=$api_key";
 
