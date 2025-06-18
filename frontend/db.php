@@ -1,14 +1,17 @@
 
 <?php
 class MySqlDB {
-    private $host = 'localhost';
-    private $db = 'ai_marketing';
-    private $user = 'root';
-    private $pass = '';
     private $conn;
 
     public function __construct() {
-        $this->conn = new mysqli($this->host, $this->user, $this->pass, $this->db);
+        $config = parse_ini_file(__DIR__ . '/../../../private/ai_config.ini', true);
+
+        $host = $config['database']['host'];
+        $db = $config['database']['dbname'];
+        $user = $config['database']['username'];
+        $pass = $config['database']['password'];
+
+        $this->conn = new mysqli($host, $user, $pass, $db);
         
     
 

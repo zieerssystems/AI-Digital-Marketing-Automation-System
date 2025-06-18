@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'db.php';
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
