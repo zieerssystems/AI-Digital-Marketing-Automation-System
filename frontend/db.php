@@ -301,6 +301,177 @@ public function getAllGroups() {
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 
+public function getEmailLogs()
+{
+    $conn = $this->getConnection();
+    $query = "SELECT * FROM email_logs ORDER BY sent_at DESC";
+    $result = $conn->query($query);
+    return $result;
+}
+
+public function getAllEmailGroups()
+{
+    $conn = $this->getConnection();
+    $query = "SELECT id, group_name FROM email_groups ORDER BY group_name";
+    $result = $conn->query($query);
+    $groups = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $groups[] = ['id' => $row['id'], 'name' => $row['group_name']];
+    }
+
+    return $groups;
+}
+
+
+public function getSocialMediaPlatformByUserId($userId)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("SELECT social_media FROM user_profiles WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc(); // returns ['social_media' => 'platform']
+}
+
+
+public function getUserByEmail($email)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("SELECT id, full_name, email, phone, location, password FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($id, $full_name, $email, $phone, $location, $hashed_password);
+        $stmt->fetch();
+
+        return [
+            'id' => $id,
+            'full_name' => $full_name,
+            'email' => $email,
+            'phone' => $phone,
+            'location' => $location,
+            'password' => $hashed_password
+        ];
+    }
+
+    return null;
+}
+
+public function updateUserProfileByEmail($email, $full_name, $phone, $location)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, location = ? WHERE email = ?");
+    $stmt->bind_param("ssss", $full_name, $phone, $location, $email);
+    return $stmt->execute();
+}
+
+public function userExistsByEmailOrPhone($contact)
+{
+    $conn = $this->getConnection();
+
+    if (filter_var($contact, FILTER_VALIDATE_EMAIL)) {
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    } else {
+        $stmt = $conn->prepare("SELECT id FROM users WHERE phone = ?");
+    }
+
+    $stmt->bind_param("s", $contact);
+    $stmt->execute();
+    $stmt->store_result();
+
+    return $stmt->num_rows > 0;
+}
+
+public function updateOTPByContact($otp, $contact)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("UPDATE users SET otp = ? WHERE email = ? OR phone = ?");
+    $stmt->bind_param("iss", $otp, $contact, $contact);
+    return $stmt->execute();
+}
+
+public function isEmailExists($email)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->num_rows > 0;
+}
+
+public function registerUser($full_name, $email, $phone, $location, $hashedPassword)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("INSERT INTO users (full_name, email, phone, location, password) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $full_name, $email, $phone, $location, $hashedPassword);
+    return $stmt->execute();
+}
+
+public function getUserPasswordByEmail($email)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("SELECT password FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc(); // returns ['password' => 'hashed']
+}
+
+public function updateUserPasswordByEmail($email, $newHashedPassword)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("UPDATE users SET password = ? WHERE email = ?");
+    $stmt->bind_param("ss", $newHashedPassword, $email);
+    return $stmt->execute();
+}
+
+public function updateUserProfile($email, $full_name, $phone, $age, $location)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, age = ?, location = ? WHERE email = ?");
+    $stmt->bind_param("sssss", $full_name, $phone, $age, $location, $email);
+    return $stmt->execute();
+}
+
+public function getStoredOTPByContact($contact)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("SELECT otp FROM users WHERE email = ? OR phone = ?");
+    $stmt->bind_param("ss", $contact, $contact);
+    $stmt->execute();
+    $stmt->bind_result($otp);
+    $stmt->fetch();
+    $stmt->close();
+    return $otp; // returns null if not found
+}
+
+public function resetPasswordByContact($contact, $hashedPassword)
+{
+    $conn = $this->getConnection();
+    $stmt = $conn->prepare("UPDATE users SET password = ? WHERE email = ? OR phone = ?");
+    $stmt->bind_param("sss", $hashedPassword, $contact, $contact);
+    return $stmt->execute();
+}
+public function getUserByEmailOrPhone($input)
+{
+    $conn = $this->getConnection();
+
+    if (filter_var($input, FILTER_VALIDATE_EMAIL)) {
+        $query = "SELECT * FROM users WHERE email = ?";
+    } else {
+        $query = "SELECT * FROM users WHERE phone = ?";
+    }
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $input);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc(); // returns user row or null
+}
 
     public function closeConnection() {
         $this->conn->close();

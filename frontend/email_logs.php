@@ -1,11 +1,12 @@
 <?php
 require_once 'db.php';
 $db = new MySqlDB();
-$conn = $db->getConnection();
 
-$result = $conn->query("SELECT * FROM email_logs ORDER BY sent_at DESC");
+$result = $db->getEmailLogs();
 
-echo "<h2>Email Logs</h2><table border='1' cellpadding='8'><tr><th>Name</th><th>Email</th><th>Subject</th><th>Group ID</th><th>Sent At</th></tr>";
+echo "<h2>Email Logs</h2><table border='1' cellpadding='8'>
+<tr><th>Name</th><th>Email</th><th>Subject</th><th>Group ID</th><th>Sent At</th></tr>";
+
 while ($row = $result->fetch_assoc()) {
     echo "<tr>
         <td>{$row['contact_name']}</td>

@@ -17,15 +17,8 @@ try {
             exit;
         }
 
-        // Get platform from DB
-        $conn = $db->getConnection();
-        $stmt = $conn->prepare("SELECT social_media FROM user_profiles WHERE id = ?");
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-
+        // Get platform using db.php method
+        $row = $db->getSocialMediaPlatformByUserId($userId);
 
         if (!$row) {
             echo json_encode(["status" => "error", "message" => "User not found"]);
@@ -38,14 +31,10 @@ try {
         // Generate appropriate redirect/share link
         switch ($platform) {
             case 'linkedin':
-                // Share URL with embedded content
                 $baseUrl = "https://2662-192-140-152-125.ngrok-free.app"; // Update this
                 $shareUrl = $baseUrl . "/AI_project/frontend/shared-content.php?text=" . urlencode($content);
                 $redirectUrl = "https://www.linkedin.com/sharing/share-offsite/?url=" . urlencode($shareUrl);
-
-
                 break;
-
 
             case 'twitter':
                 $redirectUrl = "https://twitter.com/intent/tweet?text=" . urlencode($content);
@@ -56,7 +45,6 @@ try {
                 break;
 
             case 'instagram':
-                // Inform the user that Instagram cannot be posted via browser
                 echo json_encode(["status" => "error", "message" => "Instagram does not support browser-based sharing. Please use the mobile app."]);
                 exit;
 

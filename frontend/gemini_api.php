@@ -1,16 +1,19 @@
 <?php
 require_once 'db.php';
-require_once __DIR__ . '/../vendor/autoload.php'; // Load Composer
 
-use Dotenv\Dotenv;
-// Load environment variables
-$dotenv = Dotenv::createImmutable(__DIR__.'/../../../private');
-$dotenv->load();
+// ✅ Load API key from ai_config.ini (update path if needed)
+$config = parse_ini_file("C:/wamp64/private/ai_config.ini", true);
+$api_key = $config['gemini']['api_key'] ?? '';
 
+if (!$api_key) {
+    die("❌ API key not found in ai_config.ini");
+}
 
 function generate_text($prompt) {
+    global $api_key;
+
     error_log($prompt);
-    $api_key = $_ENV["GEMINI_API_KEY"];
+
     $model_name = "gemini-2.0-flash";
     $url = "https://generativelanguage.googleapis.com/v1beta/models/$model_name:generateContent?key=$api_key";
 
