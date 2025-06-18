@@ -2,27 +2,29 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'vendor/autoload.php'; // Ensure PHPMailer is installed via Composer
+require 'vendor/autoload.php'; // PHPMailer
+
+// ✅ Load mailer config from ini file (outside www)
+$config = parse_ini_file('C:/wamp64/private/ai_config.ini', true); // Absolute path
 
 function sendEmailOTP($email, $otp) {
+    global $config; // use loaded config
     $mail = new PHPMailer(true);
+
     try {
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com'; // SMTP Server
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'ashikasubhashidam@gmail.com'; // Your email
-        $mail->Password = 'hach pgvr ohyl yura'; // Your email password
+        $mail->Username = $config['mailer']['email'];      // From ini
+        $mail->Password = $config['mailer']['password'];   // From ini
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
-        $mail->setFrom('ashikasubhashidam@gmail.com', 'AI Marketing Automation');
+        $mail->setFrom($config['mailer']['email'], 'AI Marketing Automation');
         $mail->addAddress($email);
         $mail->Subject = 'Your OTP Code';
+        $mail->isHTML(true);
 
-        // Enable HTML email format
-        $mail->isHTML(true); 
-
-        // Email Body with Clickable Link
         $mail->Body = "
             <p>We received a request to reset the password for the AI MARKETING AUTOMATION user associated with this email address.</p>
             <p>If you did not request to reset this password, you can ignore this request.</p>
@@ -36,4 +38,5 @@ function sendEmailOTP($email, $otp) {
         error_log("Email sending failed: " . $mail->ErrorInfo);
     }
 }
+
 ?>

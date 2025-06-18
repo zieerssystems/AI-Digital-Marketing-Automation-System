@@ -1,6 +1,8 @@
 <?php
 session_start();
-include("config.php");
+require_once '../frontend/db.php'; // Updated to use db.php
+
+$db = new MySqlDB();
 
 $user_email = $_SESSION['user_email'] ?? '';
 $current_password = $_POST['current_password'] ?? '';
@@ -14,12 +16,8 @@ if ($new_password !== $confirm_password) {
     exit();
 }
 
-// Get current user
-$stmt = $conn->prepare("SELECT password FROM users WHERE email = ?");
-$stmt->bind_param("s", $user_email);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+// ✅ Get current hashed password from DB
+$user = $db->getUserPasswordByEmail($user_email);
 
 if (!$user || !password_verify($current_password, $user['password'])) {
     $_SESSION['flash_message'] = 'Incorrect current password!';
@@ -35,13 +33,9 @@ if (password_verify($new_password, $user['password'])) {
     exit();
 }
 
-
-// Update password
+// ✅ Update new hashed password in DB
 $new_hashed = password_hash($new_password, PASSWORD_DEFAULT);
-$update = $conn->prepare("UPDATE users SET password = ? WHERE email = ?");
-$update->bind_param("ss", $new_hashed, $user_email);
-
-if ($update->execute()) {
+if ($db->updateUserPasswordByEmail($user_email, $new_hashed)) {
     $_SESSION['flash_message'] = 'Password updated successfully!';
     $_SESSION['flash_type'] = 'success';
 } else {

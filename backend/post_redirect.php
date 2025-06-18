@@ -1,5 +1,5 @@
 <?php
-include("config.php");
+require_once '../frontend/db.php'; 
 $db = new MySqlDB();
 
 // Get company ID from the URL

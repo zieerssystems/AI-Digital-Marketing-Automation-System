@@ -1,6 +1,8 @@
 <?php
 session_start();
-include("config.php");
+require_once '../frontend/db.php'; // Use db.php from frontend
+
+$db = new MySqlDB();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
@@ -9,10 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $age = $_POST["age"];
     $location = $_POST["location"];
 
-    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, age = ?, location = ? WHERE email = ?");
-    $stmt->bind_param("sssss", $full_name, $phone, $age, $location, $email);
-
-    if ($stmt->execute()) {
+    if ($db->updateUserProfile($email, $full_name, $phone, $age, $location)) {
         // Update session data
         $_SESSION['user_name'] = $full_name;
         $_SESSION['user_phone'] = $phone;
@@ -20,8 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['user_location'] = $location;
 
         header("Location: ../frontend/profile.php?status=updated");
+        exit();
     } else {
         echo "Failed to update";
     }
 }
-?>

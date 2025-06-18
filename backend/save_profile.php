@@ -1,6 +1,8 @@
 <?php
 session_start();
-include("config.php"); // Adjust path if needed
+require_once '../frontend/db.php'; // Adjusted to load db.php from frontend
+
+$db = new MySqlDB();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_email'])) {
     $full_name = $_POST['full_name'];
@@ -8,16 +10,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_email'])) {
     $location = $_POST['location'];
     $email = $_SESSION['user_email'];
 
-    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, location = ? WHERE email = ?");
-    $stmt->bind_param("ssss", $full_name, $phone, $location, $email);
+    $success = $db->updateUserProfileByEmail($email, $full_name, $phone, $location);
 
-    if ($stmt->execute()) {
+    if ($success) {
         // Update session data
         $_SESSION['user_name'] = $full_name;
         $_SESSION['user_phone'] = $phone;
         $_SESSION['user_location'] = $location;
 
-        // Redirect with success message
         header("Location: http://localhost/AI_project/frontend/profile.php?status=success");
         exit();
     } else {
@@ -27,4 +27,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_email'])) {
     header("Location: http://localhost/AI_project/frontend/profile.php");
     exit();
 }
-?>

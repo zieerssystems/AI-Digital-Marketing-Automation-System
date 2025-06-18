@@ -1,8 +1,9 @@
 <?php
-session_start(); // Start session at the top
+session_start();
 
-// Database connection
-include("config.php"); 
+require_once '../frontend/db.php'; // Use db.php from frontend
+
+$db = new MySqlDB();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
@@ -16,13 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check if email already exists
-    $checkEmail = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $checkEmail->bind_param("s", $email);
-    $checkEmail->execute();
-    $result = $checkEmail->get_result();
-
-    if ($result->num_rows > 0) {
-        // Redirect back with an error message if email exists
+    if ($db->isEmailExists($email)) {
         header("Location: ../frontend/signup.html?status=email_exists");
         exit();
     }
@@ -31,20 +26,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $full_name = $_POST["full_name"];
     $phone = $_POST["phone"];
     $location = $_POST["location"];
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT); // Hash password
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
     // Insert new user
-    $insertUser = $conn->prepare("INSERT INTO users (full_name, email, phone, location, password) VALUES (?, ?, ?, ?, ?)");
-    $insertUser->bind_param("sssss", $full_name, $email, $phone, $location, $hashedPassword);
-
-    if ($insertUser->execute()) {
+    if ($db->registerUser($full_name, $email, $phone, $location, $hashedPassword)) {
         // Set session variables for profile display
         $_SESSION['user_name'] = $full_name;
         $_SESSION['user_email'] = $email;
         $_SESSION['user_phone'] = $phone;
         $_SESSION['user_location'] = $location;
 
-        // Redirect to profile page
         header("Location: ../frontend/profile.php");
         exit();
     } else {
@@ -53,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// If accessed directly, redirect to signup page
+// If accessed directly
 header("Location: ../frontend/signup.html");
 exit();
-?>
