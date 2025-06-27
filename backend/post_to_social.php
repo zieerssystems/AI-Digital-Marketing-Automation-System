@@ -4,6 +4,9 @@ $db = new MySqlDB();
 
 header('Content-Type: application/json');
 
+// Load ai_config.ini from private folder
+$config = parse_ini_file('C:/wamp64/private/ai_config.ini', true);
+
 $user_id = $_POST['user_id'] ?? null;
 $content = $_POST['content'] ?? '';
 
@@ -12,21 +15,27 @@ if (!$user_id || !$content) {
     exit;
 }
 
-// Fetch the selected social media platform from user_profiles
-$company = $db->getCompanyById($user_id); // user_id here is actually the company ID
+// Fetch selected social media platform
+$company = $db->getCompanyById($user_id); // user_id here is actually company ID
 
 if (!$company || empty($company['social_media'])) {
     echo json_encode(['status' => 'error', 'message' => 'No social media platform selected.']);
     exit;
 }
 
-$platform = strtolower(trim($company['social_media'])); // Normalize case
+$platform = strtolower(trim($company['social_media']));
 $redirectUrl = null;
 
-// Handle only LinkedIn redirection
+// Redirect only for LinkedIn
 if ($platform === 'linkedin') {
-    // Redirect to LinkedIn OAuth flow
-    $redirectUrl = "http://localhost/AI_PROJECT/frontend/linkedin_login.php?id=" . urlencode($user_id);
+    $baseRedirect = $config['urls']['linkedin_redirect'] ?? '';
+
+    if (!$baseRedirect) {
+        echo json_encode(['status' => 'error', 'message' => 'LinkedIn redirect URL not configured.']);
+        exit;
+    }
+
+    $redirectUrl = $baseRedirect . '?id=' . urlencode($user_id);
 
     echo json_encode([
         'status' => 'success',
@@ -36,7 +45,6 @@ if ($platform === 'linkedin') {
     exit;
 }
 
-// No redirection for other platforms
 echo json_encode([
     'status' => 'no_redirect',
     'message' => "Redirection is only supported for LinkedIn.",

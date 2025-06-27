@@ -25,10 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             sendSMSOTP($contact, $otp);
         }
 
-        header("Location: ../frontend/verify_reset_password.html");
+        header("Location: ../frontend/verify_reset_password.php");
         exit();
     } else {
-        header("Location: ../frontend/forgot_password.html?status=user_not_found");
+        header("Location: ../frontend/forgot_password.php?status=user_not_found");
         exit();
     }
 }

@@ -12,13 +12,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Check if passwords match
     if ($password !== $confirm_password) {
-        header("Location: ../frontend/signup.html?status=password_mismatch");
+        header("Location: ../frontend/signup.php?status=password_mismatch");
         exit();
     }
 
     // Check if email already exists
     if ($db->isEmailExists($email)) {
-        header("Location: ../frontend/signup.html?status=email_exists");
+        header("Location: ../frontend/signup.php?status=email_exists");
         exit();
     }
 
@@ -39,11 +39,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: ../frontend/profile.php");
         exit();
     } else {
-        header("Location: ../frontend/signup.html?status=error");
+        header("Location: ../frontend/signup.php?status=error");
         exit();
     }
 }
 
 // If accessed directly
-header("Location: ../frontend/signup.html");
+header("Location: ../frontend/signup.php");
 exit();

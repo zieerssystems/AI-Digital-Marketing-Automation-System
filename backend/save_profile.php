@@ -1,8 +1,14 @@
 <?php
 session_start();
-require_once '../frontend/db.php'; // Adjusted to load db.php from frontend
+require_once '../frontend/db.php';
 
 $db = new MySqlDB();
+
+// Load ai_config.ini from private folder
+$config = parse_ini_file('C:/wamp64/private/ai_config.ini', true);
+
+// Get profile page URL from config, or fallback to default if not found
+$profileUrl = $config['urls']['profile_page'] ?? '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_email'])) {
     $full_name = $_POST['full_name'];
@@ -18,12 +24,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_email'])) {
         $_SESSION['user_phone'] = $phone;
         $_SESSION['user_location'] = $location;
 
-        header("Location: http://localhost/AI_project/frontend/profile.php?status=success");
+        // Redirect to profile page using value from config
+        header("Location: " . $profileUrl . "?status=success");
         exit();
     } else {
         echo "Error updating profile.";
     }
 } else {
-    header("Location: http://localhost/AI_project/frontend/profile.php");
+    // Redirect to profile page even on invalid access
+    header("Location: " . $profileUrl);
     exit();
 }

@@ -24,9 +24,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // file_get_contents("https://sms-api.com/send?to=$user_input&message=Your OTP is: $otp");
         }
 
-        header("Location: ../frontend/verify_otp.html");
+        header("Location: ../frontend/verify_otp.php");
         exit();
     } else {
-        echo "<script>alert('User not found!'); window.location.href='../frontend/forgot_password.html';</script>";
+        echo "<script>alert('User not found!'); window.location.href='../frontend/forgot_password.php';</script>";
     }
 }

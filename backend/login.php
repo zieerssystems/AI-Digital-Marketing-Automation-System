@@ -23,11 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: ../frontend/index.php");
             exit();
         } else {
-            header("Location: ../frontend/login.html?status=invalid_password");
+            header("Location: ../frontend/login.php?status=invalid_password");
             exit();
         }
     } else {
-        header("Location: ../frontend/login.html?status=user_not_found");
+        header("Location: ../frontend/login.php?status=user_not_found");
         exit();
     }
 }
