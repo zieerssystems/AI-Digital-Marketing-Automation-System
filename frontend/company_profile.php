@@ -208,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </nav>
         <div class="user-dropdown">
             <?php if (!isset($_SESSION["user_id"])) { ?>
-                <a href="login.html" class="login-btn">Login</a>
+                <a href="login.php" class="login-btn">Login</a>
             <?php } else { ?>
                 <button onclick="toggleDropdown()" class="dropbtn">
                     👤 <?php echo htmlspecialchars($username); ?> ▼

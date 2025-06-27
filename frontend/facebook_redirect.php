@@ -1,4 +1,7 @@
 <?php
+// Load config from ai_config.ini
+$config = parse_ini_file('C:/wamp64/private/ai_config.ini', true);
+
 $content = $_POST['content'] ?? '';
 
 if (empty($content)) {
@@ -6,15 +9,18 @@ if (empty($content)) {
     exit;
 }
 
+// Encode content for URL
 $encodedText = urlencode($content);
 
-// Create a shareable internal preview URL that contains your content
-$shareableUrl = "http://localhost/AI_PROJECT/frontend/shared-content.php?text=" . $encodedText;
+// Get base shared-content URL from config
+$baseUrl = $config['urls']['shared_content_page'] ?? '';
 
-// Facebook expects a URL to share, so we pass our preview page as the shared link
+// Final shareable URL (e.g., http://localhost/AI_PROJECT/frontend/shared-content.php?text=...)
+$shareableUrl = $baseUrl . '?text=' . $encodedText;
+
+// Facebook sharer expects a URL to share
 $facebookShareUrl = "https://www.facebook.com/sharer/sharer.php?u=" . urlencode($shareableUrl);
 
 // Redirect to Facebook's share dialog
 header("Location: $facebookShareUrl");
 exit;
-?>

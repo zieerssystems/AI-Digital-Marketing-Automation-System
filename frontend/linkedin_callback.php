@@ -1,7 +1,14 @@
 <?php
+// Load configuration
+$config = parse_ini_file('C:/wamp64/private/ai_config.ini', true);
+
+// Get redirect URI from config
+$redirect_uri = $config['urls']['linkedin_callback'] ?? '';
+
+// Normally you'd load these from a secure config as well
 $client_id = 'YOUR_CLIENT_ID';
 $client_secret = 'YOUR_CLIENT_SECRET';
-$redirect_uri = 'http://localhost/AI_PROJECT/frontend/linkedin_callback.php';
+
 $state = $_GET['state']; // companyId
 
 if (isset($_GET['code'])) {
@@ -31,7 +38,7 @@ if (isset($_GET['code'])) {
     if (isset($result['access_token'])) {
         $access_token = $result['access_token'];
 
-        // Store token in DB (optional) for future posts
+        // Optional: Save to DB
         // $db->saveLinkedInToken($state, $access_token);
 
         // Post content

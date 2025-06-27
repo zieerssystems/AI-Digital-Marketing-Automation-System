@@ -19,6 +19,15 @@ try {
         exit;
     }
 
+    // ✅ Load config.ini
+    $config = parse_ini_file('C:/wamp64/private/ai_config.ini', true);
+    if (!$config || !isset($config['mailer']['email']) || !isset($config['mailer']['password'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Mailer configuration not found.']);
+        exit;
+    }
+    $mailerEmail = trim($config['mailer']['email']);
+    $mailerPassword = trim($config['mailer']['password']);
+
     $from = $_POST['fromEmail'] ?? '';
     $subject = $_POST['subject'] ?? '';
     $emailContent = $_POST['generated_email'] ?? '';
@@ -30,7 +39,7 @@ try {
     $contacts = [];
     $db = new MySqlDB();
 
-    // ✅ Case 1: Selected emails from group view
+    // ✅ Case 1: Selected emails
     if (!empty($selectedEmails)) {
         foreach ($selectedEmails as $entry) {
             [$name, $email] = explode('|', $entry);
@@ -39,7 +48,6 @@ try {
             }
         }
     }
-
     // ✅ Case 2: Excel upload
     elseif (isset($_FILES['excel_file']) && $_FILES['excel_file']['error'] === 0) {
         $spreadsheet = IOFactory::load($_FILES['excel_file']['tmp_name']);
@@ -58,7 +66,6 @@ try {
             }
         }
     }
-
     // ✅ Case 3: Group with row filtering
     elseif (!empty($groupId)) {
         $allContacts = $db->getContactsByGroupId($groupId);
@@ -67,7 +74,7 @@ try {
             exit;
         }
 
-        $startIndex = max($rowStart - 1, 0); // Allow row 1 as first data
+        $startIndex = max($rowStart - 1, 0);
         $endIndex = ($rowEnd > 0) ? min($rowEnd - 1, count($allContacts) - 1) : count($allContacts) - 1;
 
         for ($i = $startIndex; $i <= $endIndex; $i++) {
@@ -79,7 +86,6 @@ try {
             }
         }
     }
-
     // ❌ No valid input
     else {
         echo json_encode(['status' => 'error', 'message' => 'Please select a group, upload Excel, or choose emails manually.']);
@@ -109,12 +115,12 @@ try {
             $mailer->isSMTP();
             $mailer->Host = 'smtp.gmail.com';
             $mailer->SMTPAuth = true;
-            $mailer->Username = 'ashikasubhashidam@gmail.com';
-            $mailer->Password = 'hach pgvr ohyl yura'; // Make sure this is still valid
+            $mailer->Username = $mailerEmail;
+            $mailer->Password = $mailerPassword;
             $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mailer->Port = 587;
 
-            $mailer->setFrom($from, 'Marketing Bot');
+            $mailer->setFrom($from ?: $mailerEmail, 'Marketing Bot');
             $mailer->addAddress($email, $name);
 
             $mailer->isHTML(true);
@@ -124,7 +130,7 @@ try {
             $mailer->send();
             $successCount++;
         } catch (Exception $e) {
-            continue; // Skip and try next email
+            continue;
         }
     }
 

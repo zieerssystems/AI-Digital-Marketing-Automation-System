@@ -135,7 +135,7 @@ $username = $_SESSION['user_name'] ?? 'Guest';
         </nav>
         <div class="user-dropdown">
             <?php if (!isset($_SESSION["user_id"])) { ?>
-                <a href="login.html" class="login-btn">Login</a>
+                <a href="login.php" class="login-btn">Login</a>
             <?php } else { ?>
                 <button onclick="toggleDropdown()" class="dropbtn">
                     👤 <?php echo htmlspecialchars($username); ?> ▼
@@ -181,7 +181,7 @@ $username = $_SESSION['user_name'] ?? 'Guest';
 
             <p>Automate content creation, SEO, social media, and more with AI-powered tools.</p>
             <div class="buttons">
-                <a href="signup.html" class="btn primary">Get Started</a>
+                <a href="signup.php" class="btn primary">Get Started</a>
                 <a href="#features" class="btn secondary">Learn More</a>
             </div>
         </div>
