@@ -88,7 +88,7 @@ $verifyResetUrl = $config['urls']['verify_reset_password_api'] ?? '#';
                     <li><a href="analytics_reporting.php">Analytics & Reporting</a></li>
                 </ul>
             </li>
-            <li><a href="#">About Us</a></li>
+            <li><a href="aboutus.php">About Us</a></li>
             <li><a href="#">Contact</a></li>
         </nav>
     </header>

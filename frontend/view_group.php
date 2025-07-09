@@ -48,7 +48,7 @@ foreach ($contacts as $contact) {
         .main-container {
             padding: 30px;
         }
-        .user-dropdown {
+        /* .user-dropdown {
             position: relative;
         }
         .dropbtn {
@@ -75,7 +75,7 @@ foreach ($contacts as $contact) {
         }
         .dropdown-content a:hover {
             background-color: #f1f1f1;
-        }
+        } */
         .show {
             display: block;
         }
@@ -102,7 +102,7 @@ foreach ($contacts as $contact) {
             color: white;
             text-decoration: none;
         }
-        .dropdown-menu {
+        /* .dropdown-menu {
             display: none;
             position: absolute;
             background-color: #333;
@@ -111,7 +111,7 @@ foreach ($contacts as $contact) {
         }
         .dropdown:hover .dropdown-menu {
             display: block;
-        }
+        } */
     </style>
 </head>
 <body>
@@ -135,7 +135,7 @@ foreach ($contacts as $contact) {
                 <li><a href="analytics_reporting.php">Analytics & Reporting</a></li>
             </ul>
         </li>
-        <li><a href="#">About Us</a></li>
+        <li><a href="aboutus.php">About Us</a></li>
         <li><a href="#">Contact</a></li>
     </nav>
 

@@ -129,8 +129,8 @@ $username = $_SESSION['user_name'] ?? 'Guest';
                         <li><a href="analytics_reporting.php">Analytics & Reporting</a></li>
                     </ul>
                 </li>
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="aboutus.php">About Us</a></li>
+                <li><a href="contactus.php">Contact</a></li>
             </ul>
         </nav>
         <div class="user-dropdown">
